@@ -22,14 +22,19 @@ class EventoController extends Controller
      *
      * AÇÃO ESPERADA:
      * Refatore a query para filtrar pelo evento, ordenar pelas mais recentes e paginar de 10 em 10.
+     *
+     * TICKET #004 (N+1):
+     * Adicionado with('user') para carregar o autor de cada pergunta de uma
+     * vez só, evitando uma query extra por pergunta dentro da view.
      */
     public function show($id)
     {
         $evento = Evento::findOrFail($id);
 
-        // Filtra apenas as perguntas deste evento, ordena as mais recentes
-        // primeiro e traz apenas 10 por página em vez de carregar tudo.
+        // Filtra apenas as perguntas deste evento, carrega o autor de forma
+        // ansiosa (with), ordena as mais recentes primeiro e traz 10 por página.
         $perguntas = Pergunta::where('evento_id', $evento->id)
+            ->with('user')
             ->latest()
             ->paginate(10);
 
