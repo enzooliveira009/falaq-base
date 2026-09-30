@@ -15,6 +15,27 @@ class EventoController extends Controller
         return view('eventos.index', compact('eventos'));
     }
 
+    public function create()
+    {
+        return view('eventos.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descricao' => 'required|string',
+        ]);
+
+        Evento::create([
+            'titulo' => $request->input('titulo'),
+            'descricao' => $request->input('descricao'),
+        ]);
+
+        return redirect()->route('eventos.index')
+            ->with('sucesso', 'Evento criado com sucesso!');
+    }
+
     public function show($id)
     {
         $evento = Evento::findOrFail($id);
