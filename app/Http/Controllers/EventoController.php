@@ -30,6 +30,7 @@ class EventoController extends Controller
         Evento::create([
             'titulo' => $request->input('titulo'),
             'descricao' => $request->input('descricao'),
+            'user_id' => auth()->id(),
         ]);
 
         return redirect()->route('eventos.index')
@@ -57,9 +58,22 @@ class EventoController extends Controller
             'evento_id' => $evento->id,
             'texto'     => $request->input('texto'),
             'status'    => 'pendente',
+            'user_id'   => auth()->id(),
         ]);
 
         return redirect()->route('eventos.show', $evento->id)
             ->with('sucesso', 'Sua pergunta foi enviada com sucesso!');
+    }
+
+    public function destroyPergunta(Pergunta $pergunta)
+    {
+        $this->authorize('delete', $pergunta);
+
+        $evento = $pergunta->evento;
+
+        $pergunta->delete();
+
+        return redirect()->route('eventos.show', $evento->id)
+            ->with('sucesso', 'Pergunta removida com sucesso!');
     }
 }
