@@ -8,3 +8,4 @@ Route::get('/eventos/create', [EventoController::class, 'create'])->name('evento
 Route::post('/eventos', [EventoController::class, 'store'])->name('eventos.store')->middleware('auth');
 Route::get('/eventos/{id}', [EventoController::class, 'show'])->name('eventos.show');
 Route::post('/eventos/{id}/perguntas', [EventoController::class, 'storePergunta'])->name('eventos.perguntas.store')->middleware('auth');
+Route::delete('/perguntas/{pergunta}', [EventoController::class, 'destroyPergunta'])->name('perguntas.destroy')->middleware('auth');
