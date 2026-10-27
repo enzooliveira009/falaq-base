@@ -30,8 +30,21 @@
     <div class="col-md-7">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold m-0">📋 Perguntas do Evento</h4>
-            <span class="text-secondary small">Total no Banco: {{ $evento->perguntas()->count() }}</span>
+            <div class="d-flex align-items-center gap-3">
+                @can('moderate', $evento)
+                    <a href="{{ route('moderacoes.index', $evento) }}" class="btn btn-outline-warning btn-sm">🛡️ Fila de Moderação</a>
+                @endcan
+                <span class="text-secondary small">Total no Banco: {{ $evento->perguntas()->count() }}</span>
+            </div>
         </div>
+
+        @if(session('sucesso'))
+            <div class="alert alert-success">{{ session('sucesso') }}</div>
+        @endif
+
+        @error('motivo')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         @forelse($perguntas as $pergunta)
             <div class="card mb-3 shadow-sm border-start border-4 border-primary">
@@ -63,6 +76,16 @@
                             </form>
                         @endcan
                     </div>
+
+                    @auth
+                        <form action="{{ route('moderacoes.store', $pergunta) }}" method="POST" class="d-flex gap-2 mt-3">
+                            @csrf
+                            <input type="text" name="motivo" minlength="10" maxlength="255"
+                                   class="form-control form-control-sm bg-dark text-white border-secondary"
+                                   placeholder="Motivo da denúncia (mín. 10 caracteres)">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Denunciar</button>
+                        </form>
+                    @endauth
                 </div>
             </div>
         @empty
