@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="row">
-    <!-- Formularço de envio de Pergunta -->
     <div class="col-md-5 mb-4">
         <div class="card shadow-sm p-3">
             <h4 class="fw-bold mb-3">💬 Faça sua Pergunta</h4>
@@ -28,7 +27,6 @@
         </div>
     </div>
 
-    <!-- Lista de Perguntas (TICKET #002) -->
     <div class="col-md-7">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold m-0">📋 Perguntas do Evento</h4>
@@ -47,13 +45,24 @@
                         <span>{{ $pergunta->created_at->format('d/m/Y H:i') }}</span>
                     </div>
 
-                    @can('delete', $pergunta)
-                        <form action="{{ route('perguntas.destroy', $pergunta->id) }}" method="POST" class="mt-2">
+                    <div class="d-flex align-items-center gap-2 mt-3">
+                        <form action="{{ route('perguntas.votar', $pergunta) }}" method="POST">
                             @csrf
-                            @method('DELETE')
-                            <x-danger-button>Excluir</x-danger-button>
+                            <button type="submit"
+                                    class="btn btn-sm fw-bold {{ $pergunta->ja_votou ? 'btn-warning' : 'btn-outline-light' }}"
+                                    title="{{ $pergunta->ja_votou ? 'Clique para remover seu voto' : 'Clique para votar' }}">
+                                👍 {{ $pergunta->ja_votou ? 'Votado' : 'Upvote' }} · {{ $pergunta->votos_count }}
+                            </button>
                         </form>
-                    @endcan
+
+                        @can('delete', $pergunta)
+                            <form action="{{ route('perguntas.destroy', $pergunta->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <x-danger-button>Excluir</x-danger-button>
+                            </form>
+                        @endcan
+                    </div>
                 </div>
             </div>
         @empty
@@ -62,7 +71,6 @@
             </div>
         @endforelse
 
-        <!-- TICKET #002: Renderização dos Botões de Paginação -->
         @if(method_exists($perguntas, 'links'))
             <div class="d-flex justify-content-center mt-4">
                 {{ $perguntas->links() }}
